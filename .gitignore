@@ -1,0 +1,28 @@
+# Credenciales locales — NUNCA subir al repo
+client_secrets.json
+credentials.json
+token.json
+token_mail.json
+.env
+.env.local
+.env.deploy.txt
+
+# Logs locales (la DB sí se sube, los logs no)
+logs/
+*.log
+
+# SQLite WAL temporales
+tracker.db-shm
+tracker.db-wal
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# OS
+.DS_Store
+.idea/
+.vscode/

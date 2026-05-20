@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": null,
+  "installCommand": null,
+  "outputDirectory": null,
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/welcome", "destination": "/welcome.html" },
+    { "source": "/stats", "destination": "/stats.html" },
+    { "source": "/config", "destination": "/config.html" },
+    { "source": "/mistats", "destination": "/mistats.html" },
+    { "source": "/manifest.json", "destination": "/manifest.json" }
+  ],
+  "functions": {
+    "api/data.py":       { "memory": 256, "maxDuration": 10 },
+    "api/task.py":       { "memory": 256, "maxDuration": 10 },
+    "api/stats.py":      { "memory": 256, "maxDuration": 10 },
+    "api/config.py":     { "memory": 256, "maxDuration": 10 },
+    "api/push.py":       { "memory": 256, "maxDuration": 10 },
+    "api/setup_team.py":  { "memory": 256, "maxDuration": 15 },
+    "api/test_mail.py":   { "memory": 256, "maxDuration": 10 },
+    "api/needs_setup.py": { "memory": 256, "maxDuration": 10 }
+  }
+}

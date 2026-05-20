@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenido a __BRAND_NAME__</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #0a0a0a;
+      color: #e5e5e5;
+      min-height: 100vh;
+      padding: 40px 20px;
+      line-height: 1.5;
+    }
+    .container { max-width: 640px; margin: 0 auto; }
+    .header { text-align: center; margin-bottom: 40px; }
+    .header h1 { color: #fff; font-size: 36px; margin-bottom: 8px; letter-spacing: -0.01em; }
+    .header p { color: #a0a0a0; font-size: 17px; }
+
+    .progress { display: flex; gap: 8px; margin-bottom: 32px; }
+    .progress .bar { flex: 1; height: 4px; background: #1a1a1a; border-radius: 2px; transition: background .3s; }
+    .progress .bar.active { background: #ff6b35; }
+    .progress .bar.done { background: #4caf50; }
+
+    .card { background: #141414; border: 1px solid #262626; border-radius: 16px; padding: 32px; }
+    .card h2 { color: #fff; font-size: 22px; margin-bottom: 8px; }
+    .card .subtitle { color: #a0a0a0; font-size: 14px; margin-bottom: 24px; }
+
+    label { display: block; color: #d0d0d0; font-size: 13px; margin-bottom: 6px; margin-top: 14px; font-weight: 500; }
+    label:first-of-type { margin-top: 0; }
+    input, textarea {
+      width: 100%;
+      background: #0a0a0a;
+      border: 1px solid #2a2a2a;
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus { outline: none; border-color: #ff6b35; }
+
+    .team-row {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr 40px;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .team-row input { margin: 0; }
+    .team-row button {
+      background: #2a1a1a;
+      color: #ff8080;
+      border: 1px solid #441a1a;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background .15s;
+      margin: 0;
+      padding: 0;
+    }
+    .team-row button:hover { background: #441a1a; }
+
+    .add-row {
+      background: transparent;
+      border: 1px dashed #444;
+      color: #a0a0a0;
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .add-row:hover { border-color: #ff6b35; color: #ff6b35; }
+
+    button.primary {
+      width: 100%;
+      background: #ff6b35;
+      color: #fff;
+      border: none;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: background .15s;
+      font-family: inherit;
+    }
+    button.primary:hover { background: #ff5219; }
+    button.primary:disabled { background: #333; cursor: not-allowed; opacity: 0.6; }
+
+    button.secondary {
+      background: transparent;
+      color: #a0a0a0;
+      border: 1px solid #2a2a2a;
+      padding: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 8px;
+      width: 100%;
+    }
+    button.secondary:hover { color: #fff; border-color: #444; }
+
+    .hint { color: #777; font-size: 13px; margin-bottom: 8px; }
+
+    .info-card {
+      background: #0a0a0a;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .info-card strong { color: #fff; }
+    .info-card .small { color: #888; font-size: 13px; margin-top: 4px; }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .success-box {
+      background: rgba(76, 175, 80, 0.08);
+      border: 1px solid rgba(76, 175, 80, 0.3);
+      border-radius: 10px;
+      padding: 16px;
+      color: #b0e0b0;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+    .error { background: #2a1a1a; color: #ff8080; padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 14px; }
+
+    .final-step { text-align: center; padding: 16px 0; }
+    .final-step .check {
+      width: 80px; height: 80px;
+      background: rgba(76, 175, 80, 0.15);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 40px;
+    }
+    .final-step .dashboard-btn {
+      display: inline-block;
+      background: #ff6b35;
+      color: #fff;
+      padding: 16px 36px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 17px;
+      margin-top: 20px;
+    }
+    .final-step .dashboard-btn:hover { background: #ff5219; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>Bienvenido a <span style="color: #ff6b35;">__BRAND_NAME__</span></h1>
+      <p>Configuremos tu sistema en 3 pasos. Tarda 2 minutos.</p>
+    </div>
+
+    <div class="progress">
+      <div class="bar active" id="bar1"></div>
+      <div class="bar" id="bar2"></div>
+      <div class="bar" id="bar3"></div>
+    </div>
+
+    <!-- PASO 1: EQUIPO -->
+    <div class="card step active" id="step-1">
+      <h2>Cargá tu equipo</h2>
+      <p class="subtitle">Estos son los responsables que el sistema va a notificar cuando llegue trabajo nuevo.</p>
+
+      <div id="team-rows"></div>
+
+      <button type="button" class="add-row" id="add-team">+ Agregar otro</button>
+
+      <div id="error1"></div>
+
+      <button type="button" class="primary" id="submit1">Continuar →</button>
+    </div>
+
+    <!-- PASO 2: TEST -->
+    <div class="card step" id="step-2">
+      <h2>Probemos que funciona</h2>
+      <p class="subtitle">Te mandamos un mail de prueba para verificar que el sistema puede enviar notificaciones.</p>
+
+      <div class="info-card">
+        <strong>Cuenta de envío:</strong> <span id="from-email">conectada</span>
+        <div class="small">Esta es la cuenta de Google que conectaste. Los mails salen desde acá.</div>
+      </div>
+
+      <div class="info-card">
+        <strong>Destinatario del test:</strong> <span id="admin-email">admin</span>
+        <div class="small">Revisá tu inbox después de hacer click.</div>
+      </div>
+
+      <button type="button" class="primary" id="send-test">Mandar mail de prueba</button>
+      <div id="test-result"></div>
+
+      <button type="button" class="secondary" id="skip-test">Saltar test e ir al dashboard</button>
+    </div>
+
+    <!-- PASO 3: LISTO -->
+    <div class="card step final-step" id="step-3">
+      <div class="check">🎉</div>
+      <h2>¡Todo listo!</h2>
+      <p style="color: #a0a0a0; margin: 16px 0;">
+        Tu sistema está activo. Va a empezar a watchear tu Drive en los próximos minutos
+        y te notifica cuando llegue trabajo nuevo.
+      </p>
+      <a href="/" class="dashboard-btn">Ir a mi dashboard →</a>
+      <p style="color: #666; font-size: 13px; margin-top: 24px;">
+        Tip: marcá esta URL como favorito o agregala a la pantalla de inicio del celular para acceso rápido.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_EMAIL = '__ADMIN_EMAIL__';
+    const FROM_EMAIL = '__FROM_EMAIL__';
+    const ASSIGNEE_SINGULAR = '__ASSIGNEE_NAME__';
+    const ASSIGNEE_PLURAL = '__ASSIGNEE_PLURAL__';
+
+    document.getElementById('admin-email').textContent = ADMIN_EMAIL;
+    document.getElementById('from-email').textContent = FROM_EMAIL;
+    document.querySelector('.subtitle').textContent =
+      `Estos son los ${ASSIGNEE_PLURAL} que el sistema va a notificar cuando llegue trabajo nuevo.`;
+
+    // Inicializar con 3 filas vacías
+    const teamRows = document.getElementById('team-rows');
+    function addRow(name = '', email = '') {
+      const div = document.createElement('div');
+      div.className = 'team-row';
+      div.innerHTML = `
+        <input type="text" class="team-name" placeholder="Nombre" value="${name}">
+        <input type="email" class="team-email" placeholder="email@ejemplo.com" value="${email}">
+        <button type="button" class="del-row">×</button>
+      `;
+      div.querySelector('.del-row').onclick = () => div.remove();
+      teamRows.appendChild(div);
+    }
+    addRow(); addRow(); addRow();
+    document.getElementById('add-team').onclick = () => addRow();
+
+    function showStep(n) {
+      document.querySelectorAll('.step').forEach((el, i) => el.classList.toggle('active', i === n - 1));
+      for (let i = 1; i <= 3; i++) {
+        const bar = document.getElementById('bar' + i);
+        bar.classList.toggle('active', i === n);
+        bar.classList.toggle('done', i < n);
+      }
+    }
+
+    document.getElementById('submit1').onclick = async () => {
+      const rows = document.querySelectorAll('.team-row');
+      const team = [];
+      rows.forEach(r => {
+        const name = r.querySelector('.team-name').value.trim();
+        const email = r.querySelector('.team-email').value.trim();
+        if (name && email && /^[^@]+@[^@]+\.[^@]+$/.test(email)) {
+          team.push({ name, email });
+        }
+      });
+
+      const err = document.getElementById('error1');
+      err.innerHTML = '';
+      if (team.length === 0) {
+        err.innerHTML = '<div class="error">Cargá al menos 1 responsable con nombre y email.</div>';
+        return;
+      }
+
+      const btn = document.getElementById('submit1');
+      btn.disabled = true; btn.textContent = 'Guardando...';
+
+      try {
+        const r = await fetch('/api/setup_team', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ team }),
+        });
+        if (!r.ok) { const j = await r.json(); throw new Error(j.error || 'Error'); }
+        showStep(2);
+      } catch (e) {
+        err.innerHTML = `<div class="error">${e.message}</div>`;
+      } finally {
+        btn.disabled = false; btn.textContent = 'Continuar →';
+      }
+    };
+
+    document.getElementById('send-test').onclick = async () => {
+      const btn = document.getElementById('send-test');
+      const result = document.getElementById('test-result');
+      btn.disabled = true; btn.textContent = 'Enviando...';
+      result.innerHTML = '';
+
+      try {
+        const r = await fetch('/api/test_mail', { method: 'POST' });
+        if (!r.ok) { const j = await r.json(); throw new Error(j.error || 'Error'); }
+        result.innerHTML = '<div class="success-box">✅ Mail enviado. Revisá tu inbox. Si no llegó, chequeá spam.</div>';
+        setTimeout(() => showStep(3), 1500);
+      } catch (e) {
+        result.innerHTML = `<div class="error">${e.message}</div>`;
+        btn.disabled = false; btn.textContent = 'Mandar mail de prueba';
+      }
+    };
+
+    document.getElementById('skip-test').onclick = () => showStep(3);
+  </script>
+</body>
+</html>

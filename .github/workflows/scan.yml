@@ -1,0 +1,97 @@
+name: Scan Drive (full sweep)
+
+on:
+  schedule:
+    # Scan COMPLETO cada hora — descubre proyectos nuevos, re-estima counts,
+    # cierra tareas. El scan-incremental.yml corre cada 2 min para latencia
+    # inmediata; este queda como backup full sweep.
+    - cron: '0 * * * *'
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'tracker.db'
+
+concurrency:
+  group: scan-drive
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run scan with notify
+        env:
+          OAUTH_REFRESH_TOKEN: ${{ secrets.OAUTH_REFRESH_TOKEN }}
+          OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+          MAIL_OAUTH_REFRESH_TOKEN: ${{ secrets.MAIL_OAUTH_REFRESH_TOKEN }}
+          MAIL_OAUTH_CLIENT_ID: ${{ secrets.MAIL_OAUTH_CLIENT_ID }}
+          MAIL_OAUTH_CLIENT_SECRET: ${{ secrets.MAIL_OAUTH_CLIENT_SECRET }}
+          SHEET_ID: ${{ secrets.SHEET_ID }}
+          SHEET_TAB: ${{ secrets.SHEET_TAB }}
+          SHEET_HEADER_ROW: ${{ secrets.SHEET_HEADER_ROW }}
+          SHEET_COL_PROJECT: ${{ secrets.SHEET_COL_PROJECT }}
+          SHEET_COL_ASSIGNEE: ${{ secrets.SHEET_COL_ASSIGNEE }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          BRAND_NAME: ${{ secrets.BRAND_NAME }}
+          BRAND_TAGLINE: ${{ secrets.BRAND_TAGLINE }}
+          MAIL_FROM_NAME: ${{ secrets.MAIL_FROM_NAME }}
+          MAIL_FROM_ADDRESS: ${{ secrets.MAIL_FROM_ADDRESS }}
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+          INPUT_SINGULAR: ${{ secrets.INPUT_SINGULAR }}
+          INPUT_PLURAL: ${{ secrets.INPUT_PLURAL }}
+          OUTPUT_SINGULAR: ${{ secrets.OUTPUT_SINGULAR }}
+          OUTPUT_PLURAL: ${{ secrets.OUTPUT_PLURAL }}
+          ASSIGNEE_SINGULAR: ${{ secrets.ASSIGNEE_SINGULAR }}
+          ASSIGNEE_PLURAL: ${{ secrets.ASSIGNEE_PLURAL }}
+          PROJECT_SINGULAR: ${{ secrets.PROJECT_SINGULAR }}
+          PROJECT_PLURAL: ${{ secrets.PROJECT_PLURAL }}
+          INPUT_FOLDER_NAMES: ${{ secrets.INPUT_FOLDER_NAMES }}
+          INPUT_EXTS: ${{ secrets.INPUT_EXTS }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+        run: |
+          for i in 1 2 3; do
+            python scan.py --notify && break
+            ec=$?
+            echo "Intento $i falló (exit $ec)"
+            if [ $i -lt 3 ]; then
+              sleep $((10 * i * i))
+            else
+              exit $ec
+            fi
+          done
+
+      - name: Commit DB if changed
+        run: |
+          git config user.name "asistente-bot"
+          git config user.email "bot@asistente.local"
+          if git status --porcelain tracker.db | grep -q .; then
+            git add tracker.db
+            git commit -m "[bot] update tracker.db ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
+            git push
+            echo "DB actualizada en repo"
+          else
+            echo "DB sin cambios"
+          fi

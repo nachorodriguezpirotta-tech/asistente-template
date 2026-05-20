@@ -1,0 +1,37 @@
+name: Monthly Summary
+
+on:
+  schedule:
+    # 12:00 UTC día 1 = 09:00 Argentina día 1. Ajustar para tu timezone.
+    - cron: '0 12 1 * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  monthly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+      - name: Send monthly summary
+        env:
+          OAUTH_REFRESH_TOKEN: ${{ secrets.OAUTH_REFRESH_TOKEN }}
+          OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+          MAIL_OAUTH_REFRESH_TOKEN: ${{ secrets.MAIL_OAUTH_REFRESH_TOKEN }}
+          MAIL_OAUTH_CLIENT_ID: ${{ secrets.MAIL_OAUTH_CLIENT_ID }}
+          MAIL_OAUTH_CLIENT_SECRET: ${{ secrets.MAIL_OAUTH_CLIENT_SECRET }}
+          SHEET_ID: ${{ secrets.SHEET_ID }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          BRAND_NAME: ${{ secrets.BRAND_NAME }}
+          MAIL_FROM_NAME: ${{ secrets.MAIL_FROM_NAME }}
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+        run: python monthly_summary.py

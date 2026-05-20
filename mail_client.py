@@ -1,0 +1,94 @@
+"""
+Mail client — manda mails desde tu Gmail vía API (scope: gmail.send).
+
+Uso:
+    from mail_client import send_mail
+    send_mail(to="alguien@mail.com", subject="...", body_text="...", body_html=None)
+"""
+
+import base64
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from typing import Optional
+
+from googleapiclient.discovery import build
+
+from auth import get_credentials
+
+
+_service_cache = None
+
+
+def _get_service():
+    """Servicio de Gmail. Prefiere credenciales DEDICADAS para mandar mails
+    (cuenta separada asistente.revolv@gmail.com) si están disponibles.
+    Si no, usa las credenciales normales (cuenta personal)."""
+    global _service_cache
+    if _service_cache is None:
+        try:
+            from auth_mail import get_mail_credentials
+            creds = get_mail_credentials()
+        except Exception:
+            creds = get_credentials()
+        _service_cache = build("gmail", "v1", credentials=creds, cache_discovery=False)
+    return _service_cache
+
+
+def send_mail(to: str, subject: str, body_text: str, body_html: Optional[str] = None,
+              from_name: Optional[str] = None,
+              kind: str = "", cliente: Optional[str] = None, editor: Optional[str] = None) -> str:
+    """
+    Manda un mail desde la cuenta autorizada.
+    Retorna el message_id.
+    Registra cada envío (éxito/falla) en mail_log para auditoría.
+    """
+    if from_name is None:
+        from branding_config import MAIL_FROM_NAME
+        from_name = MAIL_FROM_NAME
+
+    msg = MIMEMultipart("alternative")
+    msg["To"] = to
+    msg["Subject"] = subject
+    msg["From"] = from_name
+
+    msg.attach(MIMEText(body_text, "plain", "utf-8"))
+    if body_html:
+        msg.attach(MIMEText(body_html, "html", "utf-8"))
+
+    raw = base64.urlsafe_b64encode(msg.as_bytes()).decode("ascii")
+
+    try:
+        service = _get_service()
+        sent = service.users().messages().send(
+            userId="me",
+            body={"raw": raw},
+        ).execute()
+        msg_id = sent["id"]
+        # Log success
+        try:
+            from tracker import log_mail
+            log_mail(to_email=to, subject=subject, kind=kind, cliente=cliente,
+                     editor=editor, msg_id=msg_id, success=True)
+        except Exception:
+            pass
+        return msg_id
+    except Exception as e:
+        try:
+            from tracker import log_mail
+            log_mail(to_email=to, subject=subject, kind=kind, cliente=cliente,
+                     editor=editor, msg_id=None, success=False, error=str(e)[:300])
+        except Exception:
+            pass
+        raise
+
+
+if __name__ == "__main__":
+    from config import TEST_EMAIL, ADMIN_EMAIL, BRAND_NAME
+    to = TEST_EMAIL or ADMIN_EMAIL
+    msg_id = send_mail(
+        to=to,
+        subject=f"🧪 Test {BRAND_NAME}",
+        body_text=f"Si recibís este mail, el módulo de mail funciona.\n\n— {BRAND_NAME}",
+    )
+    print(f"✅ Mail enviado. message_id: {msg_id}")
+    print(f"   Revisá tu inbox: {TEST_EMAIL}")
