@@ -5,7 +5,7 @@ GET  /api/push?action=vapid-key   — devuelve la public key VAPID (público, si
 
 Body para subscribe:
   {
-    editor: "Rami" o null (admin),
+    editor: "Juan" o null (admin),
     t: <token>,
     subscription: { endpoint, keys: { p256dh, auth } }
   }

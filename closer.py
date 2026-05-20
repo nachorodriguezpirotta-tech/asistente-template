@@ -247,7 +247,7 @@ def run_closer(verbose: bool = True) -> dict:
             result = decrement_pending_count(cliente, completed_by_file_id=f["id"])
             if result["task_id"] is not None:
                 # Determinar el editor REAL que entregó: prioridad al owner del archivo
-                # (si subió Agus aunque la task estuviera asignada a Benja, el editor
+                # (si subió el editor X aunque la task estuviera asignada a otro editor, el editor
                 # real es Agus). Si el owner no es editor conocido, usar el de la task.
                 real_editor = identify_editor_by_owner(f) or result["editor"] or client_editor
                 cierre_data = {

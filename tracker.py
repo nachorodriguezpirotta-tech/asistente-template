@@ -169,9 +169,9 @@ def init_db():
     try:
         cols = [r[1] for r in conn.execute("PRAGMA table_info(cfg_editors)").fetchall()]
         if "receives_notifications" not in cols:
-            conn.execute("ALTER TABLE cfg_editors ADD COLUMN receives_notifications INTEGER NOT NULL DEFAULT 0")
-            for name in ("Rami", "Fran", "Benja", "Valen"):
-                conn.execute("UPDATE cfg_editors SET receives_notifications=1 WHERE name=?", (name,))
+            conn.execute("ALTER TABLE cfg_editors ADD COLUMN receives_notifications INTEGER NOT NULL DEFAULT 1")
+            # Default: todos los editores reciben notificaciones. El cliente puede cambiar
+            # individualmente desde /config.
         if "on_vacation" not in cols:
             # 🌴 Modo vacaciones: editor activo pero pausado (no mails, no recordatorios)
             conn.execute("ALTER TABLE cfg_editors ADD COLUMN on_vacation INTEGER NOT NULL DEFAULT 0")
@@ -336,16 +336,9 @@ def init_db():
             )
         """)
 
-    # Seed: Benja con dos contadores
-    now = datetime.now().isoformat(timespec='seconds')
-    conn.execute("""
-        INSERT OR IGNORE INTO editor_progress (editor, label, current, total, updated_at)
-        VALUES ('Benja', 'Básicos', 0, 60, ?)
-    """, (now,))
-    conn.execute("""
-        INSERT OR IGNORE INTO editor_progress (editor, label, current, total, updated_at)
-        VALUES ('Benja', 'Avanzados', 0, 30, ?)
-    """, (now,))
+    # NOTA: NO se hacen seeds de editores ni contadores aquí.
+    # El cliente carga sus responsables desde el welcome wizard la primera vez,
+    # y desde /config después. No queremos exponer datos de otros clientes.
     conn.commit()
     conn.close()
 

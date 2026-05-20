@@ -352,7 +352,7 @@ function openEditorModal(ed) {
   document.getElementById('modal-title').textContent = isNew ? 'Nuevo editor' : 'Editar editor';
   document.getElementById('modal-body').innerHTML = `
     <div class="field"><label>Nombre <span style="color:#f87171">*</span></label>
-      <input id="m-name" type="text" value="${escapeAttr(ed?.name || '')}" ${isNew ? '' : 'readonly style="opacity:0.6"'} placeholder="Ej: Rami">
+      <input id="m-name" type="text" value="${escapeAttr(ed?.name || '')}" ${isNew ? '' : 'readonly style="opacity:0.6"'} placeholder="Ej: Juan">
       <div class="field-hint">${isNew ? 'No se puede cambiar después' : 'Para renombrar borrá y creá uno nuevo'}</div>
     </div>
     <div class="field"><label>Email</label>

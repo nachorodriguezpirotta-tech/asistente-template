@@ -332,8 +332,8 @@ def run(notify: bool = False):
 
     # === NOTIFIER DE CRUDOS — ANTES del closer ===
     # CRÍTICO: hay que mandar mails de crudos nuevos ANTES de que el closer
-    # pueda cerrar la task con un editado viejo. Caso real (Alberto, 13/05):
-    # Alberto subió crudo → task creada count=1 → Benja había entregado editado
+    # pueda cerrar la task con un editado viejo. Caso real (Cliente, 13/05):
+    # Cliente subió crudo → task creada count=1 → el editor había entregado editado
     # del crudo PREVIO → closer decrementa → cierra → notifier corre con
     # task ya 'done' → mail del crudo perdido.
     if notify:

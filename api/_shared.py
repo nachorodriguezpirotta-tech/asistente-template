@@ -38,7 +38,7 @@ EDITORS = [e.strip() for e in _editors_env.split(",") if e.strip()] if _editors_
 # ────────── AUTH ──────────
 
 def make_token(editor: str) -> str:
-    """Token determinístico por editor. URL: ?editor=Rami&t=xxxx"""
+    """Token determinístico por editor. URL: ?editor=Juan&t=xxxx"""
     return hmac.new(
         DASHBOARD_SECRET.encode(),
         editor.lower().encode(),

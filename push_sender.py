@@ -22,7 +22,7 @@ def _vapid_claims():
 
 def list_subscriptions(editor: Optional[str] = None) -> list[dict]:
     """Lista subs activas. Si editor=None → solo admin. Si editor='*' → todas.
-    Si editor='Rami' → las de Rami (puede haber múltiples si tiene varios dispositivos)."""
+    Si editor='Juan' → las de Juan (puede haber múltiples si tiene varios dispositivos)."""
     conn = get_conn()
     if editor == '*':
         rows = conn.execute(
@@ -67,7 +67,7 @@ def delete_subscription_by_endpoint(endpoint: str):
 
 def send_push(editor: Optional[str], title: str, body: str, url: Optional[str] = None, tag: Optional[str] = None) -> int:
     """Manda push a todas las subs del editor. Devuelve cuántas se enviaron OK.
-    editor=None → admin. editor='Rami' → todos los devices de Rami.
+    editor=None → admin. editor='Juan' → todos los devices de Juan.
     Si una sub falla con 410/404 (Gone), la borra automáticamente.
     """
     if not VAPID_PRIVATE_KEY:

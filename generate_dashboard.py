@@ -23,7 +23,9 @@ SPANISH_MONTHS = {
 
 # Orden fijo de editores en el menú y bloques. Los que no estén en esta
 # lista van al final en orden alfabético.
-EDITOR_ORDER = ["Rami", "Benja", "Fran", "Valen", "Santi", "Agus", "Samu"]
+# Orden custom de editores en el dashboard. Si está vacío, se ordenan alfabéticamente.
+# El cliente puede personalizar este orden desde /config si quiere.
+EDITOR_ORDER = []
 
 
 def _order_editors(all_editors: list[str]) -> list[str]:
